@@ -7,7 +7,7 @@
 
   var typingTimeout;
 
-  
+  //asks the user for a nickname when they request to change their nickname.
   function promptNickName(promptMessage){
 
       if(!promptMessage){
@@ -25,6 +25,7 @@
       }    
   }
 
+  //displays messages when a new message is recieved
   function UpdateMessages(msg, messageNickname){
       var item = document.createElement('li');
       if(!messageNickname){
@@ -37,6 +38,7 @@
       window.scrollTo(0, document.body.scrollHeight);
   }
 
+  //show a user is typing to other users
   function showTyping(){
       if(!nickName){
           nickName = "annon";
@@ -45,10 +47,10 @@
       window.clearTimeout(typingTimeout);
       typingTimeout = setTimeout(function(){socket.emit("stop typing", nickName); },2000);
 
-      console.log("typing");
       socket.emit("typing", nickName);
   }
 
+  //adds to a list of users who are currently typing and updates the html element to show a list of those tpying 
   function typingListUpdate(){
       var userTypingString = "";
       console.log(typingUsers);
@@ -64,21 +66,16 @@
               userTypingString += " is typing";
           } else{
               userTypingString += " are typing";
-          }
-          
+          }          
       }
-      typing.innerHTML = userTypingString;        
-      
+      typing.innerHTML = userTypingString;       
   }
-
   
 
+  //submit a new message to the socket and updates the users messages locally.
   form.addEventListener('submit', function(e) {            
-      console.log("submit new");
-      console.log(input.value);
-
+     
       socket.emit("stop typing", nickName);
-      console.log("stop typing because enter");
 
       e.preventDefault();
 
@@ -99,10 +96,12 @@
       
   });
 
+  //sends the users message and nickname to the index.js to be sent to other users.
   socket.on('chat message', function(msg, messageNickname){
       UpdateMessages(msg, messageNickname);            
   });
 
+  //adds a user to the list of users who are typing.
   socket.on("typing", function(user){
       for (const val of typingUsers){
           if(val == user){
@@ -112,9 +111,9 @@
       typingUsers.push(user);
       typingListUpdate()
   });   
-
+  
+  //when a user stops typing this updates the list of users who are typing
   socket.on("stop typing", function(user){
-
       const result = typingUsers.filter(function(x){
           return x!== user;
       });

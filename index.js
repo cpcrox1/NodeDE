@@ -33,17 +33,20 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit("chat message",'A user has connected');
 
+    //sends a users chat message along with their nickname to the other users
     socket.on("chat message", (msg, nickName) =>{
         console.log("message: " + msg);
         socket.broadcast.emit('chat message', msg, nickName);
     });
 
+    //lets the other users know that a user is currently typing
     socket.on("typing", (user) =>{
         console.log(user + ' is typing');
 
         socket.broadcast.emit("typing", user);
     });
 
+    //lets the other users know that a user is no longer typing
     socket.on("stop typing", (user) =>{
       console.log(user + ' stopped typing');
 
